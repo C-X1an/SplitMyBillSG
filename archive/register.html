@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet">
+        <script src="{{ url_for('static', filename='main.js') }}"></script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Register</title>
+    </head>
+    <body>
+        <section>
+            <div class="section login-register">
+                <form action="/register" method="POST">
+                    <h3>Register</h3>
+                    <input name="Username" placeholder="Username" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+                    <button type="submit">Register</button>
+                </form>
+            </div>
+        </section>
+    </body>
+</html>

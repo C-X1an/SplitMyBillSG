@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<section>
+    <div class="section">
+        <form action="/summary" method="POST">
+            <div class="flex items-center justify-between mb-4">
+                <h5 class="text-3xl font-bold leading-none text-gray-900 dark:text-white">Summary</h5>
+            </div>
+            <div class="flex items-center justify-between mb-4">
+                {% if bill.gst %}
+                <p class="text-base font-medium text-gray-900 truncate dark:text-white">GST: 9.0%</p>
+                {% else %}
+                <p class="text-base font-medium text-gray-900 truncate dark:text-white">GST: None</p>
+                {% endif %}
+            </div>
+            <div class="flex items-center justify-between mb-4">
+                {% if bill.svccharge %}
+                <p class="text-base font-medium text-gray-900 truncate dark:text-white">Service Charge: 10.0%</p>
+                {% else %}
+                <p class="text-base font-medium text-gray-900 truncate dark:text-white">Service Charge: None</p>
+                {% endif %}
+            </div>
+            <div class="flex items-center justify-between mb-4">
+                {% if bill.discount %}
+                <p class="text-base font-medium text-gray-900 truncate dark:text-white">Discount: {{ bill.discount }}</p>
+                {% else %}
+                <p class="text-base font-medium text-gray-900 truncate dark:text-white">Discount: None</p>
+                {% endif %}
+            </div>
+            <div class="flow-root">
+                <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for payee in payees %}
+                    <li class="py-3 sm:py-4">
+                        <div class="flex items-center">
+                            <div class="flex-1 min-w-0 ms-4">
+                                <p class="text-lg font-medium text-gray-900 truncate dark:text-white">
+                                    {{ payees[payee].name }}
+                                </p>
+                                {% for item in payees[payee].items %}
+                                <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                    {{ item["name"] }}
+                                </p>
+                                {% endfor %}
+                            </div>
+                            <div class="flex-col inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                <p class="text-lg font-medium text-gray-900 truncate dark:text-white">
+                                    ${{ payees[payee].sum }}
+                                </p>
+                                {% for item in payees[payee].items %}
+                                <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                    {{ item["price"] }}
+                                </p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 next-back">Calculate Another Receipt</button>
+        </form>
+    </div>
+</section>
+{% endblock %}
