@@ -1,0 +1,175 @@
+/* General alert styling */
+.alert {
+    position: absolute;
+    width: 60%; /* Adjust the width of the alert */
+    margin: 1em auto; /* Center the alert and add margin */
+    padding: 15px;
+    border-radius: 5px;
+    display: flex; /* Use flexbox to position the close button */
+    justify-content: space-between; /* Space between message and close button */
+    align-items: center; /* Align the content vertically */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Optional shadow for better visibility */
+}
+
+/* Error alert (light red background) */
+.alert-error {
+    background-color: #f8d7da; /* Light red background for error */
+    color: #721c24; /* Darker red for the text */
+    border: 1px solid #f5c6cb;
+}
+
+/* Success alert (green background) */
+.alert-success {
+    background-color: #d4edda; /* Light green background for success */
+    color: #155724; /* Dark green for the text */
+    border: 1px solid #c3e6cb;
+}
+/* Close button styling */
+button.close {
+    background-color: transparent; /* Transparent background */
+    border: none; /* Remove border */
+    font-size: 20px; /* Adjust size */
+    color: #000; /* Default color for the cross */
+    cursor: pointer;
+    width: fit-content;
+    padding: 0;
+    margin-left: 10px; /* Optional margin to space it from the message */
+}
+
+/* Hover effect for the close button */
+button.close:hover {
+    color: #555; /* Darken the cross on hover */
+    background-color: transparent;
+}
+.section {
+    position: fixed;
+    justify-content: center;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background-color: lightgrey;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+}
+
+form, .summary {
+    margin: 6% 0;
+    border-radius: 20px;
+    background-color: white;
+    padding: 50px 35px;
+    height: fit-content;
+    min-width: 30%;
+}
+
+.popupForm {
+    padding: 0;
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    border: none;
+    transition: background-color 0.3s ease;
+    margin-top: .5rem;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 16px; /* Improved readability */
+}
+
+select {
+    border-radius: 5px;
+}
+
+label {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #444;
+    font-weight: 500;
+    text-align: left;
+}
+.next-back {
+    margin-top: 5%;
+}
+
+.overlay-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.popup-box {
+    background: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    width: 320px;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.8);
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+}
+.btn-close {
+    margin-top: 12px;
+    background-color: #e74c3c;
+    color: #fff;
+}
+
+.btn-close:hover {
+    background-color: #4caf50;
+}
+
+#items .w-fit-content {
+    width: fit-content;
+}
+/* Keyframes for fadeInUp animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* Animation for popup */
+.overlay-container.show {
+    display: flex;
+    opacity: 1;
+}
+.items-ul,
+.prices-ul {
+    color: grey;
+}
+
+.prices-ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}

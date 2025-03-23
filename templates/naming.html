@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<section>
+    <div class="section">
+        <form id="naming" action="/naming" method="POST">
+            {% for pax in range(paxcount) %}
+            <label for="name{{pax + 1}}">Name of Payee {{ pax + 1 }}</label>
+            <input type="text" id="name{{pax + 1}}" name="{{'name' + (pax + 1) | tojson}}" required>
+            {% endfor %}
+            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 next-back">Next</button>
+            <button onclick="location.href = 'pax_receipt';" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 next-back">Back</button>
+        </form>
+    </div>
+</section>
+{% endblock %}
