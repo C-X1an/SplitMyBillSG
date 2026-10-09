@@ -1,27 +1,40 @@
-    # SplitMyBill
-    #### Video Demo:  https://youtu.be/E5Gc5KAqAnA
-    #### Description:
-    SplitMybill was inspired by the daily struggles I face in my life. As someone who dines out frequently, having to manually calculate how much I have to transfer after the meal is always a torture.
+# SplitMyBillSG
 
-    Firstly, I would like to brief through some of the markup files in templates/ and static/. For this project, I have used flask framwork. I envisioned the form to be a effective and user-friendly site where users could easily navigate across it. Thus, I went for a more simplistic and minimalistic design. Alot of the design related code was supported by FlowBite which provided many interesting and attractive features. These includes the image caption, form design and even popups! Some BootStrap JS was also involved in the process. Even though my focus was mainly on back-end developing, I felt that front-end was also important, as this would be what the average users see and ultimately determines user experience on my project.
+A Flask bill-splitting prototype for assigning receipt items to diners, applying service charge and GST, and showing a per-person total. Manual item entry works without an OCR account; optional receipt parsing uses Mindee.
 
-    Moving on, we have back-end programming which was where bulk of my planning and attention went to. Initially, my vision was to create a step-by-step process in which there would be a progress bar and users could complete the whole form within one path. However, upon more research, I noticed that a large portion of JS (AJAX) would be required for that and as a result, very little python code would be needed. Even though I am more than willing to use JS in projects, this is a python project and it would defeat the purpose if most of my code was in JS. Thus, I decided to go for a more pythonic approach which would produce a similar experience. Let's go through step-by-step of my development journey.
+[Original video demo](https://youtu.be/E5Gc5KAqAnA) · [Application](project.py) · [Bill and payee model](classes.py)
 
-    Initially, I was thinking of having account-based webpage which would require authentication to utilise the webpage and would allow storing of previous receipts, but with the goal of accessibility in mind, I scraped that idea. Instead the first page would immediately be the first step. A session bill variable is assigned to a Bill instance which would be the heart of this project. In the first step, the POST request would return the number of pax and the image of receipt if applicable. As I am using mindee OCR API to decipher the receipt image, I had to convert the image into an accepted format to parse into mindee's API. This took some time but after some research and trial & error, I used the read method and filename instance variable from werkzeug FileStorage Objects to parse into mindee client. There was no online solution for this so it definitely felt good to find a solution to it. Upon receiving the predictions from mindee, I loop through all the items predicted to append it as a dict using the addItem instance method from bill. Items are added based on their respective quantity as the dict appended does not store the quantity of each item. By checking the prediction for taxes, I account for any extra charges such as GST or service charge. This is done through the tax rate and tax code.
+## Run locally
 
-    Afterwards, I decided to have namings path. This page would obtain the name of each payee with the purpose of making it easy to allocate items to payee and to easily recognise payees in the summary page. I did not really face any difficulties with this page but I did have to do abit of planning to future-proof this step. I decided that all important variables would be stored within the central "Bill" so to simplify things. Within Bill, there would be a variable called payees which is a dict object. Within this dict, the Key would be the names of payees while the Value would be the respective Payee instance.
+Use Python 3.12:
 
-    Moving on, the items list page would display every item in the bill and allow input for extra charges, and discounts. Upon retrieving the payees for the respective items, I will first clear all the payees data incase this was not the first time the form was submitted and thus, would have remanance data. Then assign the food items to the respective payees, using the bill.payees dict and addItem method within each payee instance. When items are added to payee, it will automatically increase the sum for the payee to prevent an additional step. If the payee is not assigned, a KeyError would be raised as bill.payees would index into None and a error message will be displayed for users. By looping through bill.payees, I will calculate and assign the sum accounting for extra charges and discounts. Most of the time spent was planning the data structures to ensure everything flowed smoothly.
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m flask --app project run
+```
 
-    For clearing payees, I simply loop through all the key-value pairs in bill.payees and index into it. Then, I will set each instance's sum and items to 0 and list() respectively.
+Open `http://127.0.0.1:5000`. Choose the number of diners, enter their names, add or correct items, assign a payee to each item, and review the summary. The service-charge and GST switches apply 10% and 9%; the discount is divided equally between diners.
 
-    I decided to include important features such as add, edit and remove items. This was crucial as uploading the image was optional and the OCR API did not have a 100% accuracy on it's predictions even though it was accurate mostly. When users submit the form the add item, the program receives a POST request. I then retrieve all the information, and then add it to the bill using the addItem instance method, redirecting back to items list afterwards.
-    For editing items, I decided to implement a serial number system which was not easily accessible by users. This serial number correlates to the position of the food item in bill.items list. Thus, when users submit an edit item request, I will plug in the serial and overwrite the information regarding the item.
-    Similarly, for remove item, it takes in the serial number of the item. Using removeItem method from bill instance, it removes the item from bill.items variable.
+For optional OCR, set `MINDEE_API_KEY` in your local environment using your own Mindee account. No key belongs in source control. The SDK is pinned to its 4.x receipt API because this application uses `ReceiptV5`; an SDK 5.x migration is a separate compatibility change. Provider availability and billing are governed by your account.
 
-    Lastly, when the GET request for summary is called, I provide it with the bill and bill.payees information which is then processed using Jinja in HTML. When users click on "Calculate another receipt, it send a POST request which clears the session, wiping the bill session variable and redirects it back to the first page.
+## Design and privacy
 
+- [`project.py`](project.py) implements the Flask flow and OCR adapter; [`classes.py`](classes.py) holds the bill, item and payee state.
+- A bill lives in a server-side filesystem session, not an account database. Session directories are ignored by Git. `SPLITMYBILL_SESSION_DIR` chooses the local directory; `SPLITMYBILL_SECRET_KEY` can supply a persistent signing key.
+- Selecting a receipt and submitting the form sends its contents to **Mindee** for parsing. Enter items manually when a receipt contains information you cannot share with that provider. Review OCR results before calculating.
+- This is a local prototype. It needs additional CSRF, upload validation, financial rounding and deployment review before use as a public service. The arithmetic is not a complete accounting system.
 
-    For more projects, check out my GitHub @ https://github.com/C-X1an?tab=repositories.
+## Verify without credentials
 
-    Thank you for checking out my repo! Hope this project have made dining out alot easier for me as it have for me!
+```bash
+python -m pip install -r requirements-dev.txt
+python -m pytest -q
+python -m pip_audit -r requirements.txt
+```
+
+Tests exercise the actual Flask session flow, repeated recalculation, item removal, missing-key behavior and a mocked OCR response. They use fictional receipts and never call a paid OCR endpoint. GitHub Actions runs the same checks on pull requests and `main`.
+
+The original project used Flowbite and Bootstrap in its interface. Third-party libraries retain their own terms; this repository currently has no declared software license.
