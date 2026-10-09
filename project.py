@@ -1,15 +1,23 @@
 import datetime
+import os
+import secrets
+from pathlib import Path
 from flask import Flask, render_template, redirect, flash, url_for, send_file, request, session
 from mindee import Client, PredictResponse, product
 from classes import Bill, Payee
 from flask_session import Session
+from cachelib import FileSystemCache
 
 app = Flask(__name__)
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = True
 app.config["PERMANENT_SESSION_LIFETIME"] = datetime.timedelta(days=1)
-app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_TYPE"] = "cachelib"
+app.config["SECRET_KEY"] = os.environ.get("SPLITMYBILL_SECRET_KEY") or secrets.token_hex(32)
+app.config["SESSION_CACHELIB"] = FileSystemCache(os.environ.get("SPLITMYBILL_SESSION_DIR", str(Path(app.instance_path) / "sessions")), threshold=500, mode=0o600)
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 Session(app)
 
 
@@ -33,9 +41,13 @@ def pax_receipt():
         bill = session["bill"]
         bill.paxcount = int(request.form.get("paxcount"))
         if receipt:= request.files.get("file"):
+            api_key = os.environ.get("MINDEE_API_KEY")
+            if not api_key:
+                flash("Receipt scanning needs a configured Mindee API key. You can enter items manually.", "error")
+                return redirect(url_for("pax_receipt"))
             # does not work (theory is that session variables not allowed to store FileStorage Objects)
             # bill.receipt = request.files["file"]
-            mindee_client = Client(api_key="bc00c18445c0b62850eac398051d842a")
+            mindee_client = Client(api_key=api_key)
             input_doc = mindee_client.source_from_bytes(receipt.read(), receipt.filename)
             result: PredictResponse = mindee_client.parse(product.ReceiptV5, input_doc)
             for line_items_elem in result.document.inference.prediction.line_items:
