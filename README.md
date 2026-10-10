@@ -18,7 +18,7 @@ python -m flask --app project run
 
 Open `http://127.0.0.1:5000`. Choose the number of diners, enter their names, add or correct items, assign a payee to each item, and review the summary. The service-charge and GST switches apply 10% and 9%; the discount is divided equally between diners.
 
-For optional OCR, set `MINDEE_API_KEY` in your local environment using your own Mindee account. No key belongs in source control. The SDK is pinned to its 4.x receipt API because this application uses `ReceiptV5`; an SDK 5.x migration is a separate compatibility change. Provider availability and billing are governed by your account.
+For optional OCR, set `MINDEE_API_KEY` in your local environment using your own Mindee account. No key belongs in source control. The SDK is pinned to its 4.x receipt API because this application uses `ReceiptV5`; an SDK 5.x migration is a separate compatibility change. The attempted 5.4.0 update fails at import because the 4.x `Client` interface is absent. Dependabot may propose compatible 4.x updates; major SDK updates are held until the adapter and mocked receipt tests are migrated together. Provider availability and billing are governed by your account.
 
 ## Design and privacy
 
